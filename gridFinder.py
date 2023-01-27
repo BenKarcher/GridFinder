@@ -34,7 +34,7 @@ def wordSets(wordList, letters, blanks):
     return [lines[i] for i in range(len(lines)) if lines[i] not in lines[:i]]
 
 
-def __encodingsHelper__(line, dof):
+def __encodingsHelper__(line, dof, encoding, decoding):
     res = []
     if len(line) == 1:
         for i in range(dof+1):
@@ -44,17 +44,18 @@ def __encodingsHelper__(line, dof):
     for i in range(dof+1):
         prefix = [0 for _ in range(i)]+[encoding[l] for l in line[0]]
         res.extend(
-            [prefix+[0]+enc for enc in __encodingsHelper__(line[1:], dof-i)])
+            [prefix+[0]+enc for enc in __encodingsHelper__(line[1:], dof-i, encoding, decoding)])
     return res
 
 
-def encode(wordList, letters, blanks):
+def encode(lines, letters, blanks):
     encoding = {l: i+1 for i, l in enumerate(set(letters))}
     encoding[" "] = 0
     decoding = {a: b for b, a in encoding.items()}
     encodedLines = []
     for line in lines:
-        encodedLines.extend(__encodingsHelper__(line, blanks+1-len(line)))
+        encodedLines.extend(__encodingsHelper__(
+            line, blanks+1-len(line), encoding, decoding))
     encodedLines = [encodedLines[i] for i in range(
         len(encodedLines)) if encodedLines[i] not in encodedLines[:i]]
     encodedLines = np.array(encodedLines)
